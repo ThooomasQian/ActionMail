@@ -38,11 +38,11 @@ yarn-error.log*
 next-env.d.ts
 *.tsbuildinfo
 /dist/
+/dist-pages/
 /.wrangler/
 # Checkout-local execution profile and tool state; never publish them.
 /.sites-runtime/
 /.agents/
-/.codex/
 /outputs/
 /work/
 /public/vendor/

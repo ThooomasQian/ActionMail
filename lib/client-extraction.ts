@@ -11,6 +11,23 @@ export type ExtractionProgress = {
 
 type ProgressCallback = (progress: ExtractionProgress) => void;
 
+type ViteImportMeta = ImportMeta & {
+  readonly env?: {
+    readonly BASE_URL?: string;
+  };
+};
+
+export function resolveClientAssetUrl(assetPath: string, baseUrl: string, pageUrl: string): string {
+  const normalizedBaseUrl = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+  const publicBaseUrl = new URL(normalizedBaseUrl || "/", pageUrl);
+  return new URL(assetPath.replace(/^\/+/, ""), publicBaseUrl).href;
+}
+
+function clientAssetUrl(assetPath: string): string {
+  const viteBaseUrl = (import.meta as ViteImportMeta).env?.BASE_URL ?? "/";
+  return resolveClientAssetUrl(assetPath, viteBaseUrl, window.location.href);
+}
+
 let cachedWorker: Awaited<ReturnType<typeof import("tesseract.js")["createWorker"]>> | null = null;
 let cachedLanguage: OcrLanguage | null = null;
 
@@ -20,9 +37,9 @@ async function getOcrWorker(language: OcrLanguage, onProgress: ProgressCallback)
   const tesseract = await import("tesseract.js");
   cachedLanguage = language;
   cachedWorker = await tesseract.createWorker(language, tesseract.OEM.LSTM_ONLY, {
-    workerPath: new URL("/vendor/tesseract/worker.min.js", window.location.origin).href,
-    corePath: new URL("/vendor/tesseract/core", window.location.origin).href,
-    langPath: new URL("/vendor/tesseract/lang", window.location.origin).href,
+    workerPath: clientAssetUrl("vendor/tesseract/worker.min.js"),
+    corePath: clientAssetUrl("vendor/tesseract/core"),
+    langPath: clientAssetUrl("vendor/tesseract/lang"),
     workerBlobURL: false,
     logger: (message) => {
       if (typeof message.progress === "number") {
@@ -82,14 +99,14 @@ async function prepareImageForOcr(file: File, onProgress: ProgressCallback) {
 
 async function extractPdf(file: File, language: OcrLanguage, onProgress: ProgressCallback): Promise<ExtractionResult> {
   const pdfjs = await import("pdfjs-dist");
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL("/vendor/pdfjs/pdf.worker.min.mjs", window.location.origin).href;
+  pdfjs.GlobalWorkerOptions.workerSrc = clientAssetUrl("vendor/pdfjs/pdf.worker.min.mjs");
   const loadingTask = pdfjs.getDocument({
     data: new Uint8Array(await file.arrayBuffer()),
-    cMapUrl: "/vendor/pdfjs/cmaps/",
+    cMapUrl: clientAssetUrl("vendor/pdfjs/cmaps/"),
     cMapPacked: true,
-    standardFontDataUrl: "/vendor/pdfjs/standard_fonts/",
-    wasmUrl: "/vendor/pdfjs/wasm/",
-    iccUrl: "/vendor/pdfjs/iccs/",
+    standardFontDataUrl: clientAssetUrl("vendor/pdfjs/standard_fonts/"),
+    wasmUrl: clientAssetUrl("vendor/pdfjs/wasm/"),
+    iccUrl: clientAssetUrl("vendor/pdfjs/iccs/"),
   });
 
   try {

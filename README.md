@@ -1,13 +1,21 @@
 # ActionMail
 
 [![CI](https://github.com/ThooomasQian/ActionMail/actions/workflows/ci.yml/badge.svg)](https://github.com/ThooomasQian/ActionMail/actions/workflows/ci.yml)
+[![Pages](https://github.com/ThooomasQian/ActionMail/actions/workflows/pages.yml/badge.svg)](https://github.com/ThooomasQian/ActionMail/actions/workflows/pages.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 ActionMail turns bills, notices, appointment letters, and scanned forms into a
 small, verifiable action inbox. It extracts text in the browser, proposes
 deadlines and payments with evidence, and saves only what the user confirms.
 
-Built by **Thomas Qian** as a production-oriented multimodal software project.
+A production-oriented multimodal application maintained by **Thomas Qian**.
+
+**[Try the public browser demo](https://thooomasqian.github.io/ActionMail/)**
+
+The public demo is a static GitHub Pages application. PDF extraction, OCR, and
+action detection run in the browser; confirmed action items are kept in that
+browser's `localStorage`. It has no login, D1 database, R2 bucket, or server
+API, and uploaded documents are not sent to ActionMail infrastructure.
 
 ## Why it exists
 
@@ -19,7 +27,8 @@ external model:
 2. Extract embedded PDF text or run English/Chinese OCR locally.
 3. Detect action language, dates, organizations, amounts, and source evidence.
 4. Let the user edit or remove every suggestion.
-5. Store confirmed tasks in D1 and the private original in R2.
+5. Store confirmed tasks locally in the public demo, or in D1 with the private
+   original in R2 in the full hosted application.
 6. Track completion or export open deadlines as an RFC 5545 calendar.
 
 ## Engineering highlights
@@ -32,10 +41,12 @@ external model:
   instructions, and merges conflicting duplicate payment mentions.
 - **Human-in-the-loop UI** — every action is editable and includes the exact
   document quote that produced it.
-- **Real persistence** — structured data lives in Cloudflare D1; original files
-  live in a private R2 bucket and are streamed only after an ownership check.
-- **Identity isolation** — every API request derives the stable user ID from
-  Sign in with ChatGPT headers and scopes every query by that ID.
+- **Two deployment profiles** — the public static demo uses browser
+  `localStorage`; the full hosted application stores structured data in
+  Cloudflare D1 and private originals in R2.
+- **Hosted identity isolation** — every full-application API request derives
+  the stable user ID from Sign in with ChatGPT headers and scopes every query
+  by that ID.
 - **Agent-ready surface** — progressive WebMCP tools can list or complete
   actions while unsupported browsers continue to work normally.
 - **No API key required** — the deployed MVP has no paid inference dependency.
@@ -51,15 +62,17 @@ external model:
             |                                  |
             +---------- user review -----------+
                                |
-                      authenticated API
-                        /             \
-                  D1 action data    R2 originals
-                        |
-                 inbox + ICS export
+                  public demo        hosted application
+                  localStorage       authenticated API
+                                           /       \
+                                  D1 action data  R2 originals
+                                         |
+                                  inbox + ICS export
 
-The Cloudflare Worker never runs Tesseract in its request path. That keeps CPU
-and memory predictable while preserving a strong privacy boundary: the source
-file is not uploaded until the user presses **Confirm and save**.
+The static demo has no Worker or server-side storage. In the full hosted
+application, the Cloudflare Worker never runs Tesseract in its request path.
+That keeps CPU and memory predictable while preserving a clear upload boundary:
+the source file is not uploaded until the user presses **Confirm and save**.
 
 The authentication boundary assumes deployment behind OpenAI Sites, which
 authenticates users and supplies the identity headers. A different public host
@@ -68,6 +81,31 @@ must authenticate users itself and strip untrusted copies of those headers.
 ## Local development
 
 Requirements: Node.js 22.13+ and pnpm 11.25.
+
+### Public static demo
+
+Run the same browser-only application published to GitHub Pages:
+
+    pnpm install
+    pnpm run dev:pages
+
+Open `http://localhost:5173/ActionMail/`. This profile uses `localStorage` and
+does not require authentication, D1, R2, Wrangler, or cloud credentials.
+
+Create and inspect the production static bundle with:
+
+    pnpm run build:pages
+    pnpm run preview:pages
+
+The build first copies the pinned PDF.js worker/support files and the
+English/simplified-Chinese Tesseract runtime into same-origin static assets,
+then writes the deployable site to `dist-pages/`.
+
+Pushes to `main` publish that bundle through
+`.github/workflows/pages.yml`. The repository is configured to use GitHub
+Actions as its Pages source; the workflow needs no application secret.
+
+### Full hosted application
 
     pnpm install
     pnpm run db:generate
@@ -78,8 +116,9 @@ Requirements: Node.js 22.13+ and pnpm 11.25.
       --file drizzle/0000_productive_daimon_hellstrom.sql
     pnpm run dev
 
-The development server supplies a local mock user. Production is private and
-requires Sign in with ChatGPT.
+The hosted development server supplies a local mock user. Its production
+deployment is private and requires Sign in with ChatGPT. This server-backed
+profile is separate from the public GitHub Pages demo.
 
 ## Validation
 
@@ -88,13 +127,15 @@ The current release passes:
 - ESLint
 - TypeScript strict type checking
 - Vinext/Cloudflare production build
+- Static Vite/GitHub Pages production build
 - Local D1 migration
 - Browser flow: sample extraction → edit review → D1/R2 save → completion →
   reload persistence
 - Same-origin PDF worker and English/Chinese OCR asset packaging
-- 9 deterministic extraction regression tests covering English/Chinese
-  directives, receipt false positives, duplicate/conflicting payments, two-digit
-  years, invalid dates, yuan suffixes, and OCR punctuation noise
+- 12 deterministic regression tests: nine cover English/Chinese directives,
+  receipt false positives, duplicate/conflicting payments, date validation,
+  currency formats, and OCR punctuation noise; three verify base-aware PDF/OCR
+  runtime asset URLs
 
 Run the same checks locally:
 
@@ -102,6 +143,7 @@ Run the same checks locally:
     pnpm run lint
     pnpm exec tsc --noEmit
     pnpm run build
+    pnpm run build:pages
 
 ### Public-document evaluation
 

@@ -1,6 +1,6 @@
 {
   "name": "actionmail",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Local-first document intelligence for evidence-linked, human-reviewed action extraction.",
   "author": "Thomas Qian",
   "license": "Apache-2.0",
@@ -11,6 +11,7 @@
   "bugs": {
     "url": "https://github.com/ThooomasQian/ActionMail/issues"
   },
+  "homepage": "https://thooomasqian.github.io/ActionMail/",
   "keywords": [
     "document-ai",
     "document-understanding",
@@ -29,7 +30,10 @@
     "install:ci": "bash scripts/install-pnpm.sh",
     "prepare:ocr": "node scripts/prepare-ocr-assets.mjs",
     "dev": "node scripts/prepare-ocr-assets.mjs && node scripts/run-framework.mjs dev",
+    "dev:pages": "node scripts/prepare-ocr-assets.mjs && vite --config vite.pages.config.ts",
     "build": "node scripts/prepare-ocr-assets.mjs && node scripts/run-framework.mjs build",
+    "build:pages": "node scripts/prepare-ocr-assets.mjs && vite build --config vite.pages.config.ts",
+    "preview:pages": "vite preview --config vite.pages.config.ts",
     "start": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --inspector-port 0",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern public/vendor",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",

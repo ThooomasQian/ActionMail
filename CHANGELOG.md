@@ -3,6 +3,23 @@
 All notable changes to ActionMail are documented here. The project follows
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-09-12
+
+### Added
+
+- Public GitHub Pages application with browser-local PDF, image, and text
+  processing.
+- Editable evidence-linked review, local task persistence, filtering,
+  completion, deletion, and calendar export in the static deployment.
+- Automated GitHub Pages build and deployment workflow.
+
+### Improved
+
+- PDF.js and Tesseract runtime URLs now honor the deployment base path, so the
+  same extraction code works at both `/` and `/ActionMail/`.
+- Public documentation now distinguishes the local-only static deployment from
+  the authenticated server-backed deployment.
+
 ## [0.1.0] - 2026-09-12
 
 ### Added
