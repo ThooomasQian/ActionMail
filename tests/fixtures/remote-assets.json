@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "policy": "Download to a temporary directory for local evaluation; do not redistribute fixture binaries from this repository.",
+  "assets": [
+    {
+      "id": "cfpb-g18f-page1",
+      "kind": "image",
+      "url": "https://files.consumerfinance.gov/eregulations/ER22DE11.027-1.png",
+      "source": "https://www.consumerfinance.gov/rules-policy/regulations/1026/2019-04-01/g/",
+      "sha256": "61849d2c9b8da67147b4d79743802e26bc774e0ffde271a5c85a83bd5b7b406c",
+      "license": "U.S. federal government work; attribution retained, no endorsement implied",
+      "expected": "OCR should identify a $53 minimum payment and 4/20/12 due date; transaction amounts must not become separate tasks"
+    },
+    {
+      "id": "irs-cp14",
+      "kind": "pdf",
+      "url": "https://www.irs.gov/pub/notices/cp14_english.pdf",
+      "source": "https://www.irs.gov/individuals/understanding-your-cp14-notice",
+      "sha256": "407eae8a451aaad1422bca3b00304ff6e47d16a0d3df1b1178c083469f1f0bb7",
+      "license": "U.S. federal government work; attribution retained, no endorsement implied",
+      "expected": "One primary payment task: $1,075.21 due 2018-02-20; later conflicting template date must not create a duplicate"
+    },
+    {
+      "id": "cfpb-payday-model",
+      "kind": "pdf",
+      "url": "https://files.consumerfinance.gov/f/documents/cfpb_payday_lending-models-disclosures-and-clauses.pdf",
+      "source": "https://www.consumerfinance.gov/compliance/compliance-resources/consumer-lending-resources/payday-lending-rule/",
+      "sha256": "6870ae8bd4ec1db88dbb8a4360be45ab242967eb05f544bef9b644d14581515c",
+      "license": "U.S. federal government work; attribution retained, no endorsement implied",
+      "expected": "Automatic withdrawals and returned-payment fees are informational; direct contact instructions may become tasks"
+    },
+    {
+      "id": "cfpb-closing-disclosure",
+      "kind": "pdf",
+      "url": "https://files.consumerfinance.gov/f/201207_cfpb_closing-disclosure.pdf",
+      "source": "https://www.consumerfinance.gov/compliance/compliance-resources/mortgage-resources/tila-respa-integrated-disclosures/forms-samples/",
+      "sha256": "9e0057a9325f4426557a12ee00184e0eb7c8a73e9fb577c848a8a100474c2fd2",
+      "license": "U.S. federal government work; attribution retained, no endorsement implied",
+      "expected": "Financial table labels are not tasks; explicit compare/review instructions are tasks"
+    },
+    {
+      "id": "azure-receipt",
+      "kind": "image",
+      "url": "https://raw.githubusercontent.com/Azure-Samples/azure-ai-content-understanding-assets/5857f97dedc6976c320905dfb6deb3f3d25c7745/document/receipt.png",
+      "source": "https://github.com/Azure-Samples/azure-ai-content-understanding-assets",
+      "sha256": "888235286a379a6bf6f4012a7f1a14bb5b6b3217e34de2b3bb9f0acddf799a42",
+      "license": "MIT",
+      "expected": "OCR should read receipt fields, but a completed purchase receipt should yield no explicit action"
+    },
+    {
+      "id": "aws-receipt",
+      "kind": "image",
+      "url": "https://raw.githubusercontent.com/aws-samples/amazon-textract-textractor/064fe9bea50dfa06acd1200925392d1b15338e52/tests/fixtures/receipt.jpg",
+      "source": "https://github.com/aws-samples/amazon-textract-textractor",
+      "sha256": "74ffb5ba4976231730a5576109d7a2d144c2dc719c70340705413b293cf95d4c",
+      "license": "Apache-2.0",
+      "expected": "CHANGE DUE 0.00 and transaction totals must not become tasks"
+    },
+    {
+      "id": "cnocr-multiline",
+      "kind": "image",
+      "url": "https://raw.githubusercontent.com/breezedeus/CnOCR/4686db2e08952e7a7843d35b200d00f428efde7b/docs/examples/multi-line_cn1.png",
+      "source": "https://github.com/breezedeus/CnOCR",
+      "sha256": "0afff0fd508fa2224067f3c3fcdf1ce535147af9679d40c1e28911e372144dfe",
+      "license": "Apache-2.0",
+      "expected": "Printed Chinese text should be readable, while explanatory uses of 支付 must not become tasks"
+    },
+    {
+      "id": "cnocr-train-ticket",
+      "kind": "image",
+      "url": "https://raw.githubusercontent.com/breezedeus/CnOCR/4686db2e08952e7a7843d35b200d00f428efde7b/docs/examples/huochepiao.jpeg",
+      "source": "https://github.com/breezedeus/CnOCR",
+      "sha256": "651a7be4afcfc53efb71e9a19521637fac002594919f945186830e76f16349ce",
+      "license": "Apache-2.0",
+      "expected": "Stress case for mixed-language scene OCR; low-confidence output must be clearly marked for review"
+    }
+  ]
+}
